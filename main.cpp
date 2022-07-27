@@ -11,7 +11,8 @@
 #include "triangle.h"
 #include "texture.h"
 
-
+#include "learnply.h"
+#include "learnply_io.h"
 
 #include <iostream>
 
@@ -77,8 +78,12 @@ hittable_list two_spheres() {
 }
 hittable_list triangles(){
     hittable_list objects;
-    objects.add(make_shared<sphere>(point3(0,0, 0), 0.5, make_shared<lambertian>(color(0.2,0.3,0.1))));
-    objects.add(make_shared<triangle>(point3(-1, -1, 0),point3(1, -1, 0),point3(0,  1, 0), make_shared<lambertian>(color(0.2,0.3,0.1))));
+    // objects.add(make_shared<sphere>(point3(0,0, 0), 0.5, make_shared<lambertian>(color(0.2,0.3,0.1))));
+    objects.add(make_shared<triangle>(point3(-1, -1, 0),point3(1, -1, 0),point3(0,  1, 0), make_shared<lambertian>(color(0.3,0.3,0.3))));
+
+    auto light = make_shared<diffuse_light>(color(5, 5, 5));
+    objects.add(make_shared<xz_rect>(0, 5, 0, 3, 5, light));
+
     return objects;
 }
 hittable_list simple_light() {
@@ -185,12 +190,15 @@ color ray_color(const ray& r, const color& background,const hittable& world, int
 }
 
 int main(){
+
+    Polyhedron* poly;
+
     // Image
 
     auto aspect_ratio = 16.0 / 9.0;
     int image_width = 400;
-    int samples_per_pixel = 1;
-    int max_depth = 2;
+    int samples_per_pixel = 50;
+    int max_depth = 10;
 
     //World
     hittable_list world;
@@ -225,8 +233,8 @@ int main(){
 
     case 3:
         world = triangles();
-        background = color(0.3, 0.3, 0.3);
-        lookfrom = point3(0,0,40);
+        background = color(0, 0, 0);
+        lookfrom = point3(0,10,10);
         lookat = point3(0,0,0);
         break;
 
