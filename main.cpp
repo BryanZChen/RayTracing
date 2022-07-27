@@ -171,8 +171,8 @@ hittable_list poly_mesh(){
     poly = new Polyhedron(this_file);
     fclose(this_file);
 
-    poly->initialize();
-    poly->finalize();
+    // poly->initialize();
+    // poly->finalize();
 
     for (int i = 0; i < poly->ntris(); i++)
 	{
