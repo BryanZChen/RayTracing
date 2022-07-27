@@ -161,7 +161,25 @@ hittable_list test_box() {
     return objects;
 }
 
+hittable_list poly_mesh(){
+    hittable_list triangles;
 
+    Polyhedron* poly;
+
+    FILE* this_file = fopen("../model3d/tetrahedron.ply", "r");
+    if (this_file == NULL) { return triangles; }
+    poly = new Polyhedron(this_file);
+    fclose(this_file);
+
+    poly->initialize();
+    poly->finalize();
+
+    for (int i = 0; i < poly->ntris(); i++)
+	{
+        triangles.add(make_shared<triangle>(poly->tlist[i]->verts[0]->pos, poly->tlist[i]->verts[1]->pos, poly->tlist[i]->verts[2]->pos, make_shared<lambertian>(color(0.3,0.3,0.3))));
+    }
+    return triangles;
+}
 
 
 color ray_color(const ray& r, const color& background,const hittable& world, int depth) {
@@ -191,7 +209,6 @@ color ray_color(const ray& r, const color& background,const hittable& world, int
 
 int main(){
 
-    Polyhedron* poly;
 
     // Image
 
@@ -229,7 +246,6 @@ int main(){
         lookat = point3(0,0,0);
         vfov = 20.0;
         break;
-    default:
 
     case 3:
         world = triangles();
@@ -270,6 +286,14 @@ int main(){
         lookfrom = point3(25,25,-150);
         lookat = point3(25,25,0);
         vfov = 40.0;
+        break;
+    default:
+
+    case 7:
+        world = poly_mesh();
+        background = color(0.0,0.0,0.0);
+        lookfrom = point3(5,5,5);
+        lookat = point3(0,0,0);
         break;
     }
 

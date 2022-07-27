@@ -562,8 +562,10 @@ void Polyhedron::calc_edge_length()
     vec3 v1, v2;
 	for (int i=0; i<nedges(); i++) 
 	{
-		v1 << elist[i]->verts[0]->pos[0], elist[i]->verts[0]->pos[1], elist[i]->verts[0]->pos[2];
-        v2 << elist[i]->verts[1]->pos[0], elist[i]->verts[1]->pos[1], elist[i]->verts[1]->pos[2];
+		v1 = vec3(elist[i]->verts[0]->pos[0], elist[i]->verts[0]->pos[1], elist[i]->verts[0]->pos[2]);
+        v2 = vec3(elist[i]->verts[1]->pos[0], elist[i]->verts[1]->pos[1], elist[i]->verts[1]->pos[2]);
+		// v1 << elist[i]->verts[0]->pos[0], elist[i]->verts[0]->pos[1], elist[i]->verts[0]->pos[2];
+    //     v2 << elist[i]->verts[1]->pos[0], elist[i]->verts[1]->pos[1], elist[i]->verts[1]->pos[2];
     
 		elist[i]->length = (v1-v2).length();
 		// elist[i]->length = (v1-v2).norm();
@@ -585,19 +587,25 @@ void Polyhedron::calc_face_normals_and_area()
 
 		area += tlist[i]->area;
 		temp_t = tlist[i];
-		v1 << vlist[tlist[i]->verts[0]->index]->pos[0], vlist[tlist[i]->verts[0]->index]->pos[1], vlist[tlist[i]->verts[0]->index]->pos[2];
-		v2 << vlist[tlist[i]->verts[1]->index]->pos[0], vlist[tlist[i]->verts[1]->index]->pos[1], vlist[tlist[i]->verts[1]->index]->pos[2];
-		v0 << vlist[tlist[i]->verts[2]->index]->pos[0], vlist[tlist[i]->verts[2]->index]->pos[1], vlist[tlist[i]->verts[2]->index]->pos[2];
-		tlist[i]->normal = (v0 - v1).cross(v2 - v1);
-        tlist[i]->normal.normalize();
+		v1 = vec3(vlist[tlist[i]->verts[0]->index]->pos[0], vlist[tlist[i]->verts[0]->index]->pos[1], vlist[tlist[i]->verts[0]->index]->pos[2]);
+		v2 = vec3(vlist[tlist[i]->verts[1]->index]->pos[0], vlist[tlist[i]->verts[1]->index]->pos[1], vlist[tlist[i]->verts[1]->index]->pos[2]);
+		v0 = vec3(vlist[tlist[i]->verts[2]->index]->pos[0], vlist[tlist[i]->verts[2]->index]->pos[1], vlist[tlist[i]->verts[2]->index]->pos[2]);
+		// v1 << vlist[tlist[i]->verts[0]->index]->pos[0], vlist[tlist[i]->verts[0]->index]->pos[1], vlist[tlist[i]->verts[0]->index]->pos[2];
+		// v2 << vlist[tlist[i]->verts[1]->index]->pos[0], vlist[tlist[i]->verts[1]->index]->pos[1], vlist[tlist[i]->verts[1]->index]->pos[2];
+		// v0 << vlist[tlist[i]->verts[2]->index]->pos[0], vlist[tlist[i]->verts[2]->index]->pos[1], vlist[tlist[i]->verts[2]->index]->pos[2];
+		// tlist[i]->normal = (v0 - v1).cross(v2 - v1);
+		tlist[i]->normal = cross((v0 - v1),(v2 - v1));
+        // tlist[i]->normal.normalize();
+        tlist[i]->normal.length();
 	}
 
 	double signedvolume = 0.0;
-    Eigen::Vector3d  test = center;
+    vec3 test = center;
 	for (int i=0; i<ntris(); i++)
 	{
-		const Eigen::Vector3d& cent = vlist[tlist[i]->verts[0]->index]->pos;
-		signedvolume += (test - cent).dot(tlist[i]->normal) * tlist[i]->area;
+		const vec3& cent = vlist[tlist[i]->verts[0]->index]->pos;
+		// signedvolume += (test - cent).dot(tlist[i]->normal) * tlist[i]->area;
+		signedvolume += dot((test - cent), (tlist[i]->normal)) * tlist[i]->area;
 	}
 	signedvolume /= area;
 	if (signedvolume < 0){ orientation = 0; }
@@ -612,11 +620,12 @@ void Polyhedron::calc_vert_normals()
 {
 	for (int i = 0; i < nverts(); i++)
 	{
-		vlist[i]->normal = Eigen::Vector3d(0.0, 0.0, 0.0);
+		vlist[i]->normal = vec3(0.0, 0.0, 0.0);
 		for (int j = 0; j < vlist[i]->ntris(); j++)
 		{
 			vlist[i]->normal += vlist[i]->tris[j]->normal;
 		}
-		vlist[i]->normal.normalize();
+		// vlist[i]->normal.normalize();
+		vlist[i]->normal.length();
 	}
 }
