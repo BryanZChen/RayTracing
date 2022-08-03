@@ -51,12 +51,12 @@ WARRANTY OF MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
 #endif
 
 
-char *type_names[] = {  /* names of scalar types */
+const char *type_names[] = {  /* names of scalar types */
 "invalid",
 "int8", "int16", "int32", "uint8", "uint16", "uint32", "float32", "float64",
 };
 
-char *old_type_names[] = {  /* old names of types for backward compatability */
+const char *old_type_names[] = {  /* old names of types for backward compatability */
 "invalid",
 "char", "short", "int", "uchar", "ushort", "uint", "float", "double",
 };
@@ -156,7 +156,7 @@ PlyFile *ply_write(
 
   /* create a record for this object */
 
-  plyfile = (PlyFile *) myalloc (sizeof (PlyFile));
+  plyfile = (PlyFile *) malloc (sizeof(PlyFile));
   plyfile->file_type = file_type;
   plyfile->num_comments = 0;
   plyfile->num_obj_info = 0;
@@ -167,11 +167,11 @@ PlyFile *ply_write(
 
   /* tuck aside the names of the elements */
 
-  plyfile->elems = (PlyElement **) myalloc (sizeof (PlyElement *) * nelems);
+  plyfile->elems = (PlyElement **) malloc (sizeof (PlyElement *) * nelems);
   for (i = 0; i < nelems; i++) {
-    elem = (PlyElement *) myalloc (sizeof (PlyElement));
+    elem = (PlyElement *) malloc (sizeof (PlyElement));
     plyfile->elems[i] = elem;
-    elem->name = strdup (elem_names[i]);
+    elem->name = _strdup (elem_names[i]);
     elem->num = 0;
     elem->nprops = 0;
   }
@@ -209,15 +209,15 @@ PlyFile *open_for_writing_ply(
 
   /* tack on the extension .ply, if necessary */
 
-  name = (char *) myalloc (sizeof (char) * (strlen (filename) + 5));
-  strcpy (name, filename);
+  name = (char *) malloc (sizeof (char) * (strlen (filename) + 5));
+  strcpy_s (name,sizeof(name), filename);
   if (strlen (name) < 4 ||
       strcmp (name + strlen (name) - 4, ".ply") != 0)
-      strcat (name, ".ply");
+      strcat_s (name,sizeof(name), ".ply");
 
   /* open the file for writing */
 
-  fp = fopen (name, "w");
+  fopen_s (&fp, name, "w");
   if (fp == NULL) {
     return (NULL);
   }
@@ -269,11 +269,11 @@ void element_layout_ply(
   /* copy the list of properties */
 
   elem->nprops = nprops;
-  elem->props = (PlyProperty **) myalloc (sizeof (PlyProperty *) * nprops);
-  elem->store_prop = (char *) myalloc (sizeof (char) * nprops);
+  elem->props = (PlyProperty **) malloc (sizeof (PlyProperty *) * nprops);
+  elem->store_prop = (char *) malloc (sizeof (char) * nprops);
 
   for (i = 0; i < nprops; i++) {
-    prop = (PlyProperty *) myalloc (sizeof (PlyProperty));
+    prop = (PlyProperty *) malloc (sizeof (PlyProperty));
     elem->props[i] = prop;
     elem->store_prop[i] = NAMED_PROP;
     copy_property (prop, &prop_list[i]);
@@ -310,8 +310,8 @@ void ply_describe_property(
   /* create room for new property */
 
   if (elem->nprops == 0) {
-    elem->props = (PlyProperty **) myalloc (sizeof (PlyProperty *));
-    elem->store_prop = (char *) myalloc (sizeof (char));
+    elem->props = (PlyProperty **) malloc (sizeof (PlyProperty *));
+    elem->store_prop = (char *) malloc (sizeof (char));
     elem->nprops = 1;
   }
   else {
@@ -324,7 +324,7 @@ void ply_describe_property(
 
   /* copy the new property */
 
-  elem_prop = (PlyProperty *) myalloc (sizeof (PlyProperty));
+  elem_prop = (PlyProperty *) malloc (sizeof (PlyProperty));
   elem->props[elem->nprops - 1] = elem_prop;
   elem->store_prop[elem->nprops - 1] = NAMED_PROP;
   copy_property (elem_prop, prop);
@@ -637,7 +637,7 @@ PlyFile *ply_read(FILE *fp, int *nelems, char ***elem_names)
 
   /* create record for this object */
 
-  plyfile = (PlyFile *) myalloc (sizeof (PlyFile));
+  plyfile = (PlyFile *) malloc (sizeof (PlyFile));
   plyfile->num_elem_types = 0;
   plyfile->comments = NULL;
   plyfile->num_comments = 0;
@@ -650,36 +650,36 @@ PlyFile *ply_read(FILE *fp, int *nelems, char ***elem_names)
   /* read and parse the file's header */
 
   words = get_words (plyfile->fp, &nwords, &orig_line);
-  if (!words || !equal_strings (words[0], "ply"))
+  if (!words || !equal_strings (words[0], (char*)"ply"))
     return (NULL);
 
   while (words) {
 
     /* parse words */
 
-    if (equal_strings (words[0], "format")) {
+    if (equal_strings (words[0], (char*)"format")) {
       if (nwords != 3)
         return (NULL);
-      if (equal_strings (words[1], "ascii"))
+      if (equal_strings (words[1], (char*)"ascii"))
         plyfile->file_type = PLY_ASCII;
-      else if (equal_strings (words[1], "binary_big_endian"))
+      else if (equal_strings (words[1], (char*)"binary_big_endian"))
         plyfile->file_type = PLY_BINARY_BE;
-      else if (equal_strings (words[1], "binary_little_endian"))
+      else if (equal_strings (words[1], (char*)"binary_little_endian"))
         plyfile->file_type = PLY_BINARY_LE;
       else
         return (NULL);
       plyfile->version = atof (words[2]);
       found_format = 1;
     }
-    else if (equal_strings (words[0], "element"))
+    else if (equal_strings (words[0], (char*)"element"))
       add_element (plyfile, words, nwords);
-    else if (equal_strings (words[0], "property"))
+    else if (equal_strings (words[0], (char*)"property"))
       add_property (plyfile, words, nwords);
-    else if (equal_strings (words[0], "comment"))
+    else if (equal_strings (words[0], (char*)"comment"))
       add_comment (plyfile, orig_line);
-    else if (equal_strings (words[0], "obj_info"))
+    else if (equal_strings (words[0], (char*)"obj_info"))
       add_obj_info (plyfile, orig_line);
-    else if (equal_strings (words[0], "end_header"))
+    else if (equal_strings (words[0], (char*)"end_header"))
       break;
 
     /* free up words space */
@@ -693,7 +693,7 @@ PlyFile *ply_read(FILE *fp, int *nelems, char ***elem_names)
 
   for (i = 0; i < plyfile->num_elem_types; i++) {
     elem = plyfile->elems[i];
-    elem->store_prop = (char *) myalloc (sizeof (char) * elem->nprops);
+    elem->store_prop = (char *) malloc (sizeof (char) * elem->nprops);
     for (j = 0; j < elem->nprops; j++)
       elem->store_prop[j] = DONT_STORE_PROP;
     elem->other_offset = NO_OTHER_PROPS; /* no "other" props by default */
@@ -701,9 +701,9 @@ PlyFile *ply_read(FILE *fp, int *nelems, char ***elem_names)
 
   /* set return values about the elements */
 
-  elist = (char **) myalloc (sizeof (char *) * plyfile->num_elem_types);
+  elist = (char **) malloc (sizeof (char *) * plyfile->num_elem_types);
   for (i = 0; i < plyfile->num_elem_types; i++)
-    elist[i] = strdup (plyfile->elems[i]->name);
+    elist[i] = _strdup (plyfile->elems[i]->name);
 
   *elem_names = elist;
   *nelems = plyfile->num_elem_types;
@@ -742,15 +742,15 @@ PlyFile *ply_open_for_reading(
 
   /* tack on the extension .ply, if necessary */
 
-  name = (char *) myalloc (sizeof (char) * (strlen (filename) + 5));
-  strcpy (name, filename);
+  name = (char *) malloc (sizeof (char) * (strlen (filename) + 5));
+  strcpy_s (name, sizeof(name), filename);
   if (strlen (name) < 4 ||
       strcmp (name + strlen (name) - 4, ".ply") != 0)
-      strcat (name, ".ply");
+      strcat_s (name,sizeof(name), ".ply");
 
   /* open the file for reading */
 
-  fp = fopen (name, "r");
+  fopen_s (&fp,name, "r");
   if (fp == NULL)
     return (NULL);
 
@@ -803,9 +803,9 @@ PlyProperty **get_element_description_ply(
   *nprops = elem->nprops;
 
   /* make a copy of the element's property list */
-  prop_list = (PlyProperty **) myalloc (sizeof (PlyProperty *) * elem->nprops);
+  prop_list = (PlyProperty **) malloc (sizeof (PlyProperty *) * elem->nprops);
   for (i = 0; i < elem->nprops; i++) {
-    prop = (PlyProperty *) myalloc (sizeof (PlyProperty));
+    prop = (PlyProperty *) malloc (sizeof (PlyProperty));
     copy_property (prop, elem->props[i]);
     prop_list[i] = prop;
   }
@@ -1075,8 +1075,8 @@ static PlyOtherProp *get_other_properties(
   setup_other_props (plyfile, elem);
 
   /* create structure for describing other_props */
-  other = (PlyOtherProp *) myalloc (sizeof (PlyOtherProp));
-  other->name = strdup (elem->name);
+  other = (PlyOtherProp *) malloc (sizeof (PlyOtherProp));
+  other->name = _strdup (elem->name);
 #if 0
   if (elem->other_offset == NO_OTHER_PROPS) {
     other->size = 0;
@@ -1086,14 +1086,14 @@ static PlyOtherProp *get_other_properties(
   }
 #endif
   other->size = elem->other_size;
-  other->props = (PlyProperty **) myalloc (sizeof(PlyProperty) * elem->nprops);
+  other->props = (PlyProperty **) malloc (sizeof(PlyProperty) * elem->nprops);
   
   /* save descriptions of each "other" property */
   nprops = 0;
   for (i = 0; i < elem->nprops; i++) {
     if (elem->store_prop[i])
       continue;
-    prop = (PlyProperty *) myalloc (sizeof (PlyProperty));
+    prop = (PlyProperty *) malloc (sizeof (PlyProperty));
     copy_property (prop, elem->props[i]);
     other->props[nprops] = prop;
     nprops++;
@@ -1184,9 +1184,9 @@ PlyOtherElems *get_other_element_ply (PlyFile *plyfile)
   /* other data structure if necessary */
 
   if (plyfile->other_elems == NULL) {
-    plyfile->other_elems = (PlyOtherElems *) myalloc (sizeof (PlyOtherElems));
+    plyfile->other_elems = (PlyOtherElems *) malloc (sizeof (PlyOtherElems));
     other_elems = plyfile->other_elems;
-    other_elems->other_list = (OtherElem *) myalloc (sizeof (OtherElem));
+    other_elems->other_list = (OtherElem *) malloc (sizeof (OtherElem));
     other = &(other_elems->other_list[0]);
     other_elems->num_elems = 1;
   }
@@ -1202,7 +1202,7 @@ PlyOtherElems *get_other_element_ply (PlyFile *plyfile)
   other->elem_count = elem_count;
 
   /* save name of element */
-  other->elem_name = strdup (elem_name);
+  other->elem_name = _strdup (elem_name);
 
   /* create a list to hold all the current elements */
   other->other_data = (OtherData **)
@@ -1354,9 +1354,9 @@ char *recreate_command_line (int argc, char *argv[])
 
   /* repeatedly append argv */
   for (i = 0; i < argc; i++) {
-    strcat (line, argv[i]);
+    strcat_s (line, sizeof(line), argv[i]);
     if (i != argc - 1)
-      strcat (line, " ");
+      strcat_s (line,sizeof(line), " ");
   }
 
   return (line);
@@ -1430,7 +1430,7 @@ void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
   int nwords;
   int which_word;
   FILE *fp = plyfile->fp;
-  char *elem_data,*item;
+  char* elem_data, * item{};
   char *item_ptr;
   int item_size;
   int int_val;
@@ -1440,7 +1440,7 @@ void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
   int store_it;
   char **store_array;
   char *orig_line;
-  char *other_data;
+  char* other_data{};
   int other_flag;
 
   /* the kind of element we're reading currently */
@@ -1452,7 +1452,7 @@ void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
     char **ptr;
     other_flag = 1;
     /* make room for other_props */
-    other_data = (char *) myalloc (elem->other_size);
+    other_data = (char *) malloc (elem->other_size);
     /* store pointer in user's structure to the other_props */
     ptr = (char **) (elem_ptr + elem->other_offset);
     *ptr = other_data;
@@ -1502,7 +1502,7 @@ void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
       }
       else {
         if (store_it) {
-          item_ptr = (char *) myalloc (sizeof (char) * item_size * list_count);
+          item_ptr = (char *) malloc (sizeof (char) * item_size * list_count);
           item = item_ptr;
           *store_array = item_ptr;
         }
@@ -1524,7 +1524,7 @@ void ascii_get_element(PlyFile *plyfile, char *elem_ptr)
       if (store_it) {
 	char *str;
 	char **str_ptr;
-	str = strdup (words[which_word++]);
+	str = _strdup (words[which_word++]);
         item = elem_data + prop->offset;
 	str_ptr = (char **) item;
 	*str_ptr = str;
@@ -1563,7 +1563,7 @@ void binary_get_element(PlyFile *plyfile, char *elem_ptr)
   PlyProperty *prop;
   FILE *fp = plyfile->fp;
   char *elem_data;
-  char *item;
+  char* item{};
   char *item_ptr;
   int item_size;
   int int_val;
@@ -1572,7 +1572,7 @@ void binary_get_element(PlyFile *plyfile, char *elem_ptr)
   int list_count;
   int store_it;
   char **store_array;
-  char *other_data;
+  char* other_data{};
   int other_flag;
 
   /* the kind of element we're reading currently */
@@ -1584,7 +1584,7 @@ void binary_get_element(PlyFile *plyfile, char *elem_ptr)
     char **ptr;
     other_flag = 1;
     /* make room for other_props */
-    other_data = (char *) myalloc (elem->other_size);
+    other_data = (char *) malloc (elem->other_size);
     /* store pointer in user's structure to the other_props */
     ptr = (char **) (elem_ptr + elem->other_offset);
     *ptr = other_data;
@@ -1625,7 +1625,7 @@ void binary_get_element(PlyFile *plyfile, char *elem_ptr)
       }
       else {
         if (store_it) {
-          item_ptr = (char *) myalloc (sizeof (char) * item_size * list_count);
+          item_ptr = (char *) malloc (sizeof (char) * item_size * list_count);
           item = item_ptr;
           *store_array = item_ptr;
         }
@@ -1647,7 +1647,7 @@ void binary_get_element(PlyFile *plyfile, char *elem_ptr)
       int len;
       char *str;
       fread (&len, sizeof(int), 1, fp);
-      str = (char *) myalloc (len);
+      str = (char *) malloc (len);
       fread (str, len, 1, fp);
       if (store_it) {
 	char **str_ptr;
@@ -1719,7 +1719,7 @@ char **get_words(FILE *fp, int *nwords, char **orig_line)
   char *ptr,*ptr2;
   char *result;
 
-  words = (char **) myalloc (sizeof (char *) * max_words);
+  words = (char **) malloc (sizeof (char *) * max_words);
 
   /* read in a line */
   result = fgets (str, BIG_STRING, fp);
@@ -2265,14 +2265,14 @@ void add_element (PlyFile *plyfile, char **words, int nwords)
   PlyElement *elem;
 
   /* create the new element */
-  elem = (PlyElement *) myalloc (sizeof (PlyElement));
-  elem->name = strdup (words[1]);
+  elem = (PlyElement *) malloc (sizeof (PlyElement));
+  elem->name = _strdup (words[1]);
   elem->num = atoi (words[2]);
   elem->nprops = 0;
 
   /* make room for new element in the object's list of elements */
   if (plyfile->num_elem_types == 0)
-    plyfile->elems = (PlyElement **) myalloc (sizeof (PlyElement *));
+    plyfile->elems = (PlyElement **) malloc (sizeof (PlyElement *));
   else
     plyfile->elems = (PlyElement **) realloc (plyfile->elems,
                      sizeof (PlyElement *) * (plyfile->num_elem_types + 1));
@@ -2299,12 +2299,12 @@ int get_prop_type(char *type_name)
 
   /* try to match the type name */
   for (i = StartType + 1; i < EndType; i++)
-    if (equal_strings (type_name, type_names[i]))
+    if (equal_strings (type_name, (char*)type_names[i]))
       return (i);
 
   /* see if we can match an old type name */
   for (i = StartType + 1; i < EndType; i++)
-    if (equal_strings (type_name, old_type_names[i]))
+    if (equal_strings (type_name, (char*)old_type_names[i]))
       return (i);
 
   /* if we get here, we didn't find the type */
@@ -2330,23 +2330,23 @@ void add_property (PlyFile *plyfile, char **words, int nwords)
 
   /* create the new property */
 
-  prop = (PlyProperty *) myalloc (sizeof (PlyProperty));
+  prop = (PlyProperty *) malloc (sizeof (PlyProperty));
 
-  if (equal_strings (words[1], "list")) {          /* list */
+  if (equal_strings (words[1], (char*)"list")) {          /* list */
     prop->count_external = get_prop_type (words[2]);
     prop->external_type = get_prop_type (words[3]);
-    prop->name = strdup (words[4]);
+    prop->name =_strdup (words[4]);
     prop->is_list = PLY_LIST;
   }
-  else if (equal_strings (words[1], "string")) {   /* string */
+  else if (equal_strings (words[1], (char*)"string")) {   /* string */
     prop->count_external = Int8;
     prop->external_type = Int8;
-    prop->name = strdup (words[2]);
+    prop->name =_strdup (words[2]);
     prop->is_list = PLY_STRING;
   }
   else {                                           /* scalar */
     prop->external_type = get_prop_type (words[1]);
-    prop->name = strdup (words[2]);
+    prop->name =_strdup (words[2]);
     prop->is_list = PLY_SCALAR;
   }
 
@@ -2355,7 +2355,7 @@ void add_property (PlyFile *plyfile, char **words, int nwords)
   elem = plyfile->elems[plyfile->num_elem_types - 1];
 
   if (elem->nprops == 0)
-    elem->props = (PlyProperty **) myalloc (sizeof (PlyProperty *));
+    elem->props = (PlyProperty **) malloc (sizeof (PlyProperty *));
   else
     elem->props = (PlyProperty **) realloc (elem->props,
                   sizeof (PlyProperty *) * (elem->nprops + 1));
@@ -2413,7 +2413,7 @@ Copy a property.
 
 void copy_property(PlyProperty *dest, PlyProperty *src)
 {
-  dest->name = strdup (src->name);
+  dest->name =_strdup (src->name);
   dest->external_type = src->external_type;
   dest->internal_type = src->internal_type;
   dest->offset = src->offset;
@@ -2525,9 +2525,9 @@ char **get_element_list_ply(PlyFile *ply, int *num_elems)
 
   /* create the list of element names */
 
-  elist = (char **) myalloc (sizeof (char *) * ply->num_elem_types);
+  elist = (char **) malloc (sizeof (char *) * ply->num_elem_types);
   for (i = 0; i < ply->num_elem_types; i++)
-    elist[i] = strdup (ply->elems[i]->name);
+    elist[i] =_strdup (ply->elems[i]->name);
 
   /* return the number of elements and the list of element names */
   *num_elems = ply->num_elem_types;
@@ -2547,13 +2547,13 @@ void append_comment_ply(PlyFile *ply, char *comment)
 {
   /* (re)allocate space for new comment */
   if (ply->num_comments == 0)
-    ply->comments = (char **) myalloc (sizeof (char *));
+    ply->comments = (char **) malloc (sizeof (char *));
   else
     ply->comments = (char **) realloc (ply->comments,
 		     sizeof (char *) * (ply->num_comments + 1));
 
   /* add comment to list */
-  ply->comments[ply->num_comments] = strdup (comment);
+  ply->comments[ply->num_comments] =_strdup (comment);
   ply->num_comments++;
 }
 
@@ -2587,13 +2587,13 @@ void append_obj_info_ply(PlyFile *ply, char *obj_info)
 {
   /* (re)allocate space for new info */
   if (ply->num_obj_info == 0)
-    ply->obj_info = (char **) myalloc (sizeof (char *));
+    ply->obj_info = (char **) malloc (sizeof (char *));
   else
     ply->obj_info = (char **) realloc (ply->obj_info,
 		     sizeof (char *) * (ply->num_obj_info + 1));
 
   /* add info to list */
-  ply->obj_info[ply->num_obj_info] = strdup (obj_info);
+  ply->obj_info[ply->num_obj_info] =_strdup (obj_info);
   ply->num_obj_info++;
 }
 
@@ -2811,8 +2811,8 @@ void describe_property_ply(
   /* create room for new property */
 
   if (elem->nprops == 0) {
-    elem->props = (PlyProperty **) myalloc (sizeof (PlyProperty *));
-    elem->store_prop = (char *) myalloc (sizeof (char));
+    elem->props = (PlyProperty **) malloc (sizeof (PlyProperty *));
+    elem->store_prop = (char *) malloc (sizeof (char));
     elem->nprops = 1;
   }
   else {
@@ -2825,7 +2825,7 @@ void describe_property_ply(
 
   /* copy the new property */
 
-  elem_prop = (PlyProperty *) myalloc (sizeof (PlyProperty));
+  elem_prop = (PlyProperty *) malloc (sizeof (PlyProperty));
   elem->props[elem->nprops - 1] = elem_prop;
   elem->store_prop[elem->nprops - 1] = NAMED_PROP;
   copy_property (elem_prop, prop);
@@ -2859,8 +2859,8 @@ void describe_other_properties_ply(
 
   if (elem->nprops == 0) {
     elem->props = (PlyProperty **)
-                  myalloc (sizeof (PlyProperty *) * other->nprops);
-    elem->store_prop = (char *) myalloc (sizeof (char) * other->nprops);
+                  malloc (sizeof (PlyProperty *) * other->nprops);
+    elem->store_prop = (char *) malloc (sizeof (char) * other->nprops);
     elem->nprops = 0;
   }
   else {
@@ -2875,7 +2875,7 @@ void describe_other_properties_ply(
   /* copy the other properties */
 
   for (i = 0; i < other->nprops; i++) {
-    prop = (PlyProperty *) myalloc (sizeof (PlyProperty));
+    prop = (PlyProperty *) malloc (sizeof (PlyProperty));
     copy_property (prop, other->props[i]);
     elem->props[elem->nprops] = prop;
     elem->store_prop[elem->nprops] = OTHER_PROP;
@@ -2933,13 +2933,13 @@ typedef struct RuleName {
 } RuleName;
 
 RuleName rule_name_list[] = {
-  AVERAGE_RULE, "avg",
-  RANDOM_RULE, "rnd",
-  MINIMUM_RULE, "max",
-  MAXIMUM_RULE, "min",
-  MAJORITY_RULE, "major",
-  SAME_RULE, "same",
-  -1, "end_marker",
+  AVERAGE_RULE, (char*)"avg",
+  RANDOM_RULE, (char*)"rnd",
+  MINIMUM_RULE, (char*)"max",
+  MAXIMUM_RULE, (char*)"min",
+  MAJORITY_RULE, (char*)"major",
+  SAME_RULE, (char*)"same",
+  -1, (char*)"end_marker",
 };
 
 
@@ -2970,9 +2970,9 @@ PlyPropRules *init_rule_ply (PlyFile *ply, char *elem_name)
     exit (-1);
   }
 
-  rules = (PlyPropRules *) myalloc (sizeof (PlyPropRules));
+  rules = (PlyPropRules *) malloc (sizeof (PlyPropRules));
   rules->elem = elem;
-  rules->rule_list = (int *) myalloc (sizeof(int) * elem->nprops);
+  rules->rule_list = (int *) malloc (sizeof(int) * elem->nprops);
   rules->max_props = 0;
   rules->nprops = 0;
 
@@ -3084,8 +3084,8 @@ void weight_props_ply (PlyFile *ply, float weight, void *other_props)
   /* allocate space for properties and weights, if necessary */
   if (rules->max_props == 0) {
     rules->max_props = 6;
-    rules->props = (void **) myalloc (sizeof (void *) * rules->max_props);
-    rules->weights = (float *) myalloc (sizeof (float) * rules->max_props);
+    rules->props = (void **) malloc (sizeof (void *) * rules->max_props);
+    rules->weights = (float *) malloc (sizeof (float) * rules->max_props);
   }
   if (rules->nprops == rules->max_props) {
     rules->max_props *= 2;
@@ -3136,13 +3136,13 @@ void *get_new_props_ply(PlyFile *ply)
   }
 
   /* create room for combined other properties */
-  new_data = (char *) myalloc (sizeof (char) * elem->other_size);
+  new_data = (char *) malloc (sizeof (char) * elem->other_size);
 
   /* make sure there is enough room to store values we're to combine */
 
   if (max_vals == 0) {
     max_vals = rules->nprops;
-    vals = (double *) myalloc (sizeof (double) * rules->nprops);
+    vals = (double *) malloc (sizeof (double) * rules->nprops);
   }
   if (rules->nprops >= max_vals) {
     max_vals = rules->nprops;
@@ -3266,7 +3266,7 @@ PlyRuleList *append_prop_rule (
   char *ptr;
 
   /* find . */
-  str = strdup (property);
+  str =_strdup (property);
   for (ptr = str; *ptr != '\0' && *ptr != '.'; ptr++) ;
 
   /* split string at . */

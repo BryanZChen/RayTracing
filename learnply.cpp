@@ -49,7 +49,7 @@ Polyhedron::Polyhedron(FILE *file) : orientation(0), seed(-1), center(0.0, 0.0, 
     /* prepare to read the i'th list of elements */
     elem_name = setup_element_read_ply (in_ply, i, &elem_count);
 
-    if (equal_strings ("vertex", elem_name)) 
+    if (equal_strings ((char*)"vertex", elem_name)) 
 	{
       /* create a vertex list to hold all the vertices */
 	  vlist.resize(elem_count, NULL);
@@ -68,7 +68,7 @@ Polyhedron::Polyhedron(FILE *file) : orientation(0), seed(-1), center(0.0, 0.0, 
         vlist[j]->other_props = vert.other_props;
       }
     }
-    else if (equal_strings ("face", elem_name)) 
+    else if (equal_strings ((char*)"face", elem_name))
 	{
       /* create a list to hold all the face elements */
 	  tlist.resize(elem_count, NULL);
@@ -148,24 +148,24 @@ void Polyhedron::write_file(FILE *file)
   ply = write_ply (file, num_elem_types, elist, in_ply->file_type);
 
   /* describe what properties go into the vertex elements */
-  describe_element_ply (ply, "vertex", nverts());
+  describe_element_ply (ply, (char*)"vertex", nverts());
   describe_property_ply (ply, &vert_props[0]);
   describe_property_ply (ply, &vert_props[1]);
   describe_property_ply (ply, &vert_props[2]);
 
-  describe_element_ply (ply, "face", ntris());
+  describe_element_ply (ply, (char*)"face", ntris());
   describe_property_ply (ply, &face_props[0]);
 
   copy_comments_ply (ply, in_ply);
   char mm[1024];
-  sprintf(mm, "modified by learnply");
+  sprintf_s(mm, (char*)"modified by learnply");
   append_comment_ply (ply, mm);
   copy_obj_info_ply (ply, in_ply);
 
   header_complete_ply (ply);
 
   /* set up and write the vertex elements */
-  put_element_setup_ply (ply, "vertex");
+  put_element_setup_ply (ply, (char*)"vertex");
   for (i = 0; i < nverts(); i++) 
   {
     Vertex_io vert;
@@ -183,7 +183,7 @@ void Polyhedron::write_file(FILE *file)
     vlist[i]->index = i;
 
   /* set up and write the face elements */
-  put_element_setup_ply (ply, "face");
+  put_element_setup_ply (ply, (char*)"face");
 
   Face_io face;
   face.verts = new int[3];

@@ -1,0 +1,43 @@
+﻿  main.cpp
+  learnply.cpp
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\learnply.cpp(93,54): warning C4312: 'type cast': conversion from 'int' to 'Vertex *' of greater size
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\learnply.cpp(94,54): warning C4312: 'type cast': conversion from 'int' to 'Vertex *' of greater size
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\learnply.cpp(95,54): warning C4312: 'type cast': conversion from 'int' to 'Vertex *' of greater size
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\learnply.cpp(109,56): warning C4311: 'type cast': pointer truncation from 'Vertex *' to 'int'
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\learnply.cpp(109,56): warning C4302: 'type cast': truncation from 'Vertex *' to 'int'
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\learnply.cpp(110,56): warning C4311: 'type cast': pointer truncation from 'Vertex *' to 'int'
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\learnply.cpp(110,56): warning C4302: 'type cast': truncation from 'Vertex *' to 'int'
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\learnply.cpp(111,56): warning C4311: 'type cast': pointer truncation from 'Vertex *' to 'int'
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\learnply.cpp(111,56): warning C4302: 'type cast': truncation from 'Vertex *' to 'int'
+  ply.cpp
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(206,15): warning C4101: 'elem': unreferenced local variable
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(204,7): warning C4101: 'i': unreferenced local variable
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(349,7): warning C4101: 'i': unreferenced local variable
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(351,16): warning C4101: 'prop': unreferenced local variable
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(581,24): warning C4267: '=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(475,7): warning C4101: 'i': unreferenced local variable
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(671,31): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(1320,7): warning C4101: 'i': unreferenced local variable
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(1349,28): warning C4267: '+=': conversion from 'size_t' to 'int', possible loss of data
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(1426,7): warning C4101: 'i': unreferenced local variable
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(1561,7): warning C4101: 'i': unreferenced local variable
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(1713,9): warning C4101: 'j': unreferenced local variable
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(1713,7): warning C4101: 'i': unreferenced local variable
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(1925,19): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(2034,18): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(2035,19): warning C4244: '=': conversion from 'double' to 'unsigned int', possible loss of data
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(2039,18): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(2040,19): warning C4244: '=': conversion from 'double' to 'unsigned int', possible loss of data
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(2116,18): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(2117,19): warning C4244: '=': conversion from 'double' to 'unsigned int', possible loss of data
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(2122,18): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(2123,19): warning C4244: '=': conversion from 'double' to 'unsigned int', possible loss of data
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(2241,17): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(2327,7): warning C4101: 'count_type': unreferenced local variable
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(2326,7): warning C4101: 'prop_type': unreferenced local variable
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(2775,7): warning C4101: 'i': unreferenced local variable
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(2777,16): warning C4101: 'prop': unreferenced local variable
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(3060,7): warning C4101: 'count': unreferenced local variable
+C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\ply.cpp(3059,7): warning C4101: 'i': unreferenced local variable
+  Generating Code...
+  RayTracing2.vcxproj -> C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\x64\Debug\RayTracing2.exe

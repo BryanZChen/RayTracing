@@ -12,9 +12,11 @@
 #include "texture.h"
 
 #include "learnply.h"
-#include "learnply_io.h"
+//#include "learnply_io.h"
 
 #include <iostream>
+#include <chrono>
+#include <ctime>    
 
 hittable_list random_scene(){
     hittable_list world;
@@ -161,23 +163,48 @@ hittable_list test_box() {
     return objects;
 }
 
+Polyhedron* poly;
+
 hittable_list poly_mesh(){
     hittable_list triangles;
 
-    Polyhedron* poly;
+    auto light = make_shared<diffuse_light>(color(6, 6, 6));
+    auto glass_material = make_shared<dielectric>(1.5);
+    auto matte_material = make_shared<lambertian>(color(0.3, 0.3, 0.3));
 
-    FILE* this_file = fopen("../model3d/tetrahedron.ply", "r");
+    auto albedo = color::random(0.5, 1);
+    auto fuzz = random_double(0, 0.5);
+    auto metal_material = make_shared<metal>(albedo, fuzz);
+
+
+    auto x_material = make_shared<lambertian>(color(1, 0, 0));
+    auto y_material = make_shared<lambertian>(color(0, 1, 0));
+    auto z_material = make_shared<lambertian>(color(0, 0, 1));
+
+    //triangles.add(make_shared<sphere>(point3(1, 0, 0), 0.1, x_material));
+    //triangles.add(make_shared<sphere>(point3(0, 1, 0), 0.1, y_material));
+    //triangles.add(make_shared<sphere>(point3(0, 0, 1), 0.1, z_material));
+
+
+    FILE* this_file;
+    //fopen_s(&this_file,"C:\\Users\\chenz\\OneDrive\\Documents\\Internship\\RayTracing2\\model3d\\cubewithdivot.ply", "r");
+    fopen_s(&this_file, "model3d\\cubewithdivot.ply", "r");
+
     if (this_file == NULL) { return triangles; }
     poly = new Polyhedron(this_file);
     fclose(this_file);
 
-    // poly->initialize();
-    // poly->finalize();
-
+    poly->initialize();
+    std::cerr << "Loading Triangles...";
     for (int i = 0; i < poly->ntris(); i++)
 	{
-        triangles.add(make_shared<triangle>(poly->tlist[i]->verts[0]->pos, poly->tlist[i]->verts[1]->pos, poly->tlist[i]->verts[2]->pos, make_shared<lambertian>(color(0.3,0.3,0.3))));
+        triangles.add(make_shared<triangle>(poly->tlist[i]->verts[0]->pos, poly->tlist[i]->verts[1]->pos, poly->tlist[i]->verts[2]->pos, metal_material));
     }
+    triangles.add(make_shared<sphere>(point3(0, 0, -1001), 1000, make_shared<lambertian>(color(0.3, 0.3, 0.3))));
+    //triangles.add(make_shared<sphere>(point3(0, -1001, 0), 1000, make_shared<lambertian>(color(0.3, 0.3, 0.3))));
+    triangles.add(make_shared<xy_rect>(-2, 2, -2, 2, 5, light));
+    //triangles.add(make_shared<xz_rect>(2, 4, 2, 4, 5, light));
+
     return triangles;
 }
 
@@ -207,22 +234,26 @@ color ray_color(const ray& r, const color& background,const hittable& world, int
     // return (1.0-t)*color(1.0, 1.0, 1.0) + t*color(0.5, 0.7, 1.0);
 }
 
+
 int main(){
-
-
     // Image
 
+    //auto aspect_ratio = 9.0 / 16.0;
     auto aspect_ratio = 16.0 / 9.0;
+
     int image_width = 400;
-    int samples_per_pixel = 50;
-    int max_depth = 10;
+    //int image_width = 700;
+
+    int samples_per_pixel = 10;
+    int max_depth = 20;
 
     //World
     hittable_list world;
 
     point3 lookfrom;
     point3 lookat;
-    auto vfov = 40;
+    auto vfov = 140;
+
     auto aperture = 0.0;
     color background(0,0,0);
 
@@ -235,16 +266,16 @@ int main(){
         background = color(0.7, 0.8, 1.00);
         lookfrom = point3(13,2,3);
         lookat = point3(0,0,0);
-        vfov = 20.0;
+        vfov = 20;
         aperture = 0.1;
         break;
-    
+
     case 2:
         world = two_spheres();
         background = color(0.7, 0.8, 1.00);
         lookfrom = point3(13,2,3);
         lookat = point3(0,0,0);
-        vfov = 20.0;
+        vfov = 20;
         break;
 
     case 3:
@@ -261,7 +292,7 @@ int main(){
         background = color(0.0,0.0,0.0);
         lookfrom = point3(26,3,6);
         lookat = point3(0,3,0);
-        vfov = 20.0;
+        vfov = 20;
         break;
 
     case 5:
@@ -273,7 +304,7 @@ int main(){
         samples_per_pixel = 10;
         lookfrom = point3(278, 278, -2000);
         lookat = point3(278, 278, 0);
-        vfov = 40.0;
+        vfov = 40;
         break;
         
     
@@ -285,35 +316,47 @@ int main(){
         samples_per_pixel = 10;
         lookfrom = point3(25,25,-150);
         lookat = point3(25,25,0);
-        vfov = 40.0;
+        vfov = 40;
         break;
+
     default:
 
     case 7:
         world = poly_mesh();
-        background = color(0.0,0.0,0.0);
-        lookfrom = point3(5,5,5);
+        background = color(0.4,0.4,0.4);
+        lookfrom = point3(2,5,2);
+        //lookfrom = point3(10, 5, 5);
         lookat = point3(0,0,0);
+        image_width = 320;
+        samples_per_pixel = 20;
+        max_depth = 10;
+        vfov = 15;
+
         break;
     }
 
-
-
-
     //Camera
-    vec3 vup(0,1,0);
+    vec3 vup(0,0,1);
     // (lookfrom-lookat).length()
     auto dist_to_focus = 10.0;
     int image_height = static_cast<int>(image_width / aspect_ratio);
 
 
-    camera cam(lookfrom, lookat ,vup , 20, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
+    camera cam(lookfrom, lookat ,vup , vfov, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
 
     // Render
     std::cout << "P3\n" << image_width << " " << image_height << "\n255\n";
 
+    // Time
+
+    auto start = std::chrono::system_clock::now();
+    auto end = std::chrono::system_clock::now();
+
+    std::cerr << "\rScanlines remaining: " << image_height - 1;
+
     for (int j = image_height-1; j >= 0; --j) {
-        std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
+        start = std::chrono::system_clock::now();
+
         for (int i = 0; i < image_width; ++i) {
             color pixel_color(0, 0, 0);
             for (int s = 0; s < samples_per_pixel; ++s) {
@@ -324,7 +367,14 @@ int main(){
             }
             write_color(std::cout, pixel_color, samples_per_pixel);
         }
-    }
 
-    std::cerr << "\nDone.\n";
+        end = std::chrono::system_clock::now();
+        std::chrono::duration<double> elapsed_seconds = end - start;
+
+        std::cerr << "\rScanlines remaining: " << j << " Time remaining: " << (elapsed_seconds.count()*j)/60 << 'm ';
+    }
+    //poly->finalize();
+    std::time_t end_time = std::chrono::system_clock::to_time_t(end);
+
+    std::cerr << "\nDone." << " Finshed Computation at: " << std::ctime(&end_time) << "\n";
 }
