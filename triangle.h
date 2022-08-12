@@ -4,6 +4,7 @@
 #include "rtweekend.h"
 #include "hittable.h"
 #include "vec3.h"
+#include <algorithm>
 
 class triangle : public hittable {
     public:
@@ -25,7 +26,19 @@ class triangle : public hittable {
         virtual bool bounding_box(double time0, double time1, aabb& output_box) const override {
             // The bounding box must have non-zero width in each dimension, so pad the Z
             // dimension a small amount.
-            output_box = aabb(point3(v0.x(),v0.y(), v0.z()-0.0001), point3(v1.x(),v2.y(), v2.z()-0.0001));
+            //output_box = aabb(point3(v0.x(),v0.y(), v0.z()-0.0001), point3(v1.x(),v2.y(), v2.z()-0.0001));
+            double min_x = std::min(std::min(v0.x(), v1.x()), v2.x());
+            double min_y = std::min(std::min(v0.y(), v1.y()), v2.y());
+            double min_z = std::min(std::min(v0.z(), v1.z()), v2.z());
+            double max_x = std::max(std::max(v0.x(), v1.x()), v2.x());
+            double max_y = std::max(std::max(v0.y(), v1.y()), v2.y());
+            double max_z = std::max(std::max(v0.z(), v1.z()), v2.z());
+
+            output_box = aabb(
+                point3(min_x, min_y, min_z),
+                point3(max_x, max_y, max_z)
+            );
+
             return true;
         }
 };

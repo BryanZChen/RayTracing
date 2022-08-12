@@ -21,52 +21,66 @@
 hittable_list random_scene(){
     hittable_list world;
 
-    // auto ground_material = make_shared<lambertian>(color(0.3,0.3,0.3));
-    // world.add(make_shared<sphere>(point3(0, -1000, 0), 1000, ground_material));
-    auto checker = make_shared<checker_texture>(color(0.2,0.3,0.1), color(0.9,0.9,0.9));
-    world.add(make_shared<sphere>(point3(0, -1000, 0), 1000, make_shared<lambertian>(checker)));
+     auto ground_material = make_shared<lambertian>(color(0.3,0.3,0.3));
+     world.add(make_shared<sphere>(point3(0, -10000, 0), 10000, ground_material));
+    //auto checker = make_shared<checker_texture>(color(0.2,0.3,0.1), color(0.9,0.9,0.9));
+    //world.add(make_shared<sphere>(point3(0, -1000, 0), 1000, make_shared<lambertian>(checker)));
 
-    for (int a= -11; a< 11; a++){
-        for(int b = -11; b< 11; b++){
-            auto choose_mat = random_double();
-            point3 center(a + 0.9 * random_double(), 0.2, b + 0.9*random_double());
+    //for (int a= -11; a< 11; a++){
+    //    for(int b = -11; b< 11; b++){
+    //        auto choose_mat = random_double();
+    //        point3 center(a + 0.9 * random_double(), 0.2, b + 0.9*random_double());
 
-            if((center - vec3(4, 0.2, 0)).length() > 0.9){
-                shared_ptr<material> sphere_material;
+    //        if((center - vec3(4, 0.2, 0)).length() > 0.9){
+    //            shared_ptr<material> sphere_material;
 
-                if(choose_mat <0.8){
-                    //diffue
-                    auto albedo = color::random() * color::random();
-                    sphere_material = make_shared<lambertian>(albedo);
-                    auto center2 = center + vec3(0,random_double(0,.5), 0);
-                    world.add(make_shared<moving_sphere>(
-                        center, center2, 0.0, 1.0, 0.2, sphere_material));
-                }else if(choose_mat < 0.95){
-                    //metal
-                    auto albedo = color::random(0.5, 1);
-                    auto fuzz = random_double(0, 0.5);
-                    sphere_material = make_shared<metal>(albedo, fuzz);
+    //            if(choose_mat <0.8){
+    //                //diffue
+    //                auto albedo = color::random() * color::random();
+    //                sphere_material = make_shared<lambertian>(albedo);
+    //                auto center2 = center + vec3(0,random_double(0,.5), 0);
+    //                world.add(make_shared<moving_sphere>(
+    //                    center, center2, 0.0, 1.0, 0.2, sphere_material));
+    //            }else if(choose_mat < 0.95){
+    //                //metal
+    //                auto albedo = color::random(0.5, 1);
+    //                auto fuzz = random_double(0, 0.5);
+    //                sphere_material = make_shared<metal>(albedo, fuzz);
 
-                    world.add(make_shared<sphere>(center, 0.2, sphere_material));
+    //                world.add(make_shared<sphere>(center, 0.2, sphere_material));
 
-                }
-                else{
-                    //glass
-                    sphere_material = make_shared<dielectric>(1.5);
-                    world.add(make_shared<sphere>(center, 0.2, sphere_material));
-                }
-            }
-        }
-    }
+    //            }
+    //            else{
+    //                //glass
+    //                sphere_material = make_shared<dielectric>(1.5);
+    //                world.add(make_shared<sphere>(center, 0.2, sphere_material));
+    //            }
+    //        }
+    //    }
+    //}
 
-    auto material1 = make_shared<dielectric>(1.5);
-    world.add(make_shared<sphere>(point3(0, 1, 0), 1.0, material1));
 
-    auto material2 = make_shared<lambertian>(color(0.4, 0.2, 0.1));
-    world.add(make_shared<sphere>(point3(-4, 1, 0), 1.0, material2));
+     auto blue = make_shared<lambertian>(color(0.3490, 0.4235, 0.83529));
+     auto yellow = make_shared<lambertian>(color(0.996, 0.92549, 0.772549));
+     auto black = make_shared<lambertian>(color(0.1, 0.1, 0.1));
 
-    auto material3 = make_shared<metal>(color(0.7, 0.6, 0.5), 0.0);
-    world.add(make_shared<sphere>(point3(4, 1, 0), 1.0, material3));
+
+
+    //auto material1 = make_shared<dielectric>(1.5);
+    world.add(make_shared<sphere>(point3(-2, 1, 0), 1.0, blue));
+
+    //auto material2 = make_shared<lambertian>(color(0.4, 0.2, 0.1));
+    //world.add(make_shared<sphere>(point3(-4, 1, 0), 1.0, yellow));
+
+    auto metals = make_shared<metal>(color(0.7, 0.6, 0.5), 0.0);
+    world.add(make_shared<sphere>(point3(2, 1, 0), 1.0, metals));
+
+    //for (int x = -80; x <= 40; x += 4) {
+    //    world.add(make_shared<sphere>(point3(x, 1, 0), 1.0, material2));
+    //}
+    auto light = make_shared<diffuse_light>(color(30, 30, 30));
+    world.add(make_shared<xz_rect>(-0.5,0.5, 2, 2.5, 3.5, light));
+
 
     return world;
 }
@@ -83,8 +97,8 @@ hittable_list triangles(){
     // objects.add(make_shared<sphere>(point3(0,0, 0), 0.5, make_shared<lambertian>(color(0.2,0.3,0.1))));
     objects.add(make_shared<triangle>(point3(-1, -1, 0),point3(1, -1, 0),point3(0,  1, 0), make_shared<lambertian>(color(0.3,0.3,0.3))));
 
-    auto light = make_shared<diffuse_light>(color(5, 5, 5));
-    objects.add(make_shared<xz_rect>(0, 5, 0, 3, 5, light));
+    auto light = make_shared<diffuse_light>(color(100, 100, 100));
+    objects.add(make_shared<xz_rect>(2, 5, 2, 3, 5, light));
 
     return objects;
 }
@@ -130,9 +144,15 @@ hittable_list cornell_box() {
     box1 = make_shared<rotate_y>(box1,15);
     box1 = make_shared<translate>(box1, vec3(265, 0, 295));
     objects.add(box1);
-    shared_ptr<hittable> box2 = make_shared<box>(point3(0,0,0), point3(165, 165, 165), white);
-    box1 = make_shared<rotate_y>(box1,-45);
-    box1 = make_shared<translate>(box1, vec3(130, 0, 65));
+
+    //shared_ptr<hittable> box2 = make_shared<box>(point3(0,0,0), point3(165, 165, 165), white);
+    //box1 = make_shared<rotate_y>(box1,-45);
+    //box1 = make_shared<translate>(box1, vec3(130, 0, 65));
+    //objects.add(box2);
+
+    shared_ptr<hittable> box2 = make_shared<box>(point3(0, 0, 0), point3(165, 165, 165), white);
+    box2 = make_shared<rotate_y>(box2, -18);
+    box2 = make_shared<translate>(box2, vec3(130, 0, 65));
     objects.add(box2);
 
     return objects;
@@ -168,12 +188,19 @@ Polyhedron* poly;
 hittable_list poly_mesh(){
     hittable_list triangles;
 
-    auto light = make_shared<diffuse_light>(color(6, 6, 6));
-    auto glass_material = make_shared<dielectric>(1.5);
+    auto light = make_shared<diffuse_light>(color(7, 7, 7));
+    auto glass_material = make_shared<dielectric>(1.33);
     auto matte_material = make_shared<lambertian>(color(0.3, 0.3, 0.3));
+    auto lightblue = make_shared<lambertian>(color(0.643, 0.7137, 0.937));
+    auto red = make_shared<lambertian>(color(0.901960, 0.349, 0.396));
+    auto dough = make_shared<lambertian>(color(0.94509, 0.6941, 0.4));
+
+
 
     auto albedo = color::random(0.5, 1);
-    auto fuzz = random_double(0, 0.5);
+    //auto fuzz = random_double(0, 0.5);
+    auto fuzz = 0.3;
+
     auto metal_material = make_shared<metal>(albedo, fuzz);
 
 
@@ -188,22 +215,30 @@ hittable_list poly_mesh(){
 
     FILE* this_file;
     //fopen_s(&this_file,"C:\\Users\\chenz\\OneDrive\\Documents\\Internship\\RayTracing2\\model3d\\cubewithdivot.ply", "r");
-    fopen_s(&this_file, "model3d\\cubewithdivot.ply", "r");
+    fopen_s(&this_file, "model3d\\cubewithhole.ply", "r");
 
     if (this_file == NULL) { return triangles; }
     poly = new Polyhedron(this_file);
     fclose(this_file);
 
     poly->initialize();
-    std::cerr << "Loading Triangles...";
+
+    hittable_list trianglenode;
+
     for (int i = 0; i < poly->ntris(); i++)
 	{
-        triangles.add(make_shared<triangle>(poly->tlist[i]->verts[0]->pos, poly->tlist[i]->verts[1]->pos, poly->tlist[i]->verts[2]->pos, metal_material));
+       
+        //trianglenode.add(make_shared<triangle>(poly->tlist[i]->verts[0]->pos, poly->tlist[i]->verts[1]->pos, poly->tlist[i]->verts[2]->pos, lightblue));
+
+        triangles.add(make_shared<triangle>(poly->tlist[i]->verts[0]->pos , poly->tlist[i]->verts[1]->pos , poly->tlist[i]->verts[2]->pos , lightblue));
     }
-    triangles.add(make_shared<sphere>(point3(0, 0, -1001), 1000, make_shared<lambertian>(color(0.3, 0.3, 0.3))));
-    //triangles.add(make_shared<sphere>(point3(0, -1001, 0), 1000, make_shared<lambertian>(color(0.3, 0.3, 0.3))));
-    triangles.add(make_shared<xy_rect>(-2, 2, -2, 2, 5, light));
-    //triangles.add(make_shared<xz_rect>(2, 4, 2, 4, 5, light));
+    //triangles.add(make_shared<bvh_node>(trianglenode, 0, 1));
+
+    //triangles.add(make_shared<sphere>(point3(0, 0, -1001), 1000, make_shared<lambertian>(color(0.3, 0.3, 0.3))));
+    //triangles.add(make_shared<xy_rect>(2, 6, 2, 6, 5, light));
+
+    triangles.add(make_shared<sphere>(point3(0, -1000, 0), 1000, make_shared<lambertian>(color(0.3, 0.3, 0.3))));
+    triangles.add(make_shared<xz_rect>(1, 3, 1, 3, 5, light));
 
     return triangles;
 }
@@ -225,7 +260,7 @@ color ray_color(const ray& r, const color& background,const hittable& world, int
 
     if(!rec.mat_ptr->scatter(r, rec, attenuation, scattered))
         return emitted;
-    return emitted + attenuation * ray_color(scattered, background, world, depth -1);
+    return emitted + attenuation * ray_color(scattered, background, world, depth - 1);
 
     
 
@@ -244,15 +279,15 @@ int main(){
     int image_width = 400;
     //int image_width = 700;
 
-    int samples_per_pixel = 10;
-    int max_depth = 20;
+    int samples_per_pixel = 500;
+    int max_depth = 50;
 
     //World
     hittable_list world;
 
     point3 lookfrom;
     point3 lookat;
-    auto vfov = 140;
+    auto vfov = 20;
 
     auto aperture = 0.0;
     color background(0,0,0);
@@ -260,14 +295,19 @@ int main(){
     switch (0)
     {
 
-
+    
     case 1:
         world = random_scene();
         background = color(0.7, 0.8, 1.00);
-        lookfrom = point3(13,2,3);
-        lookat = point3(0,0,0);
+        lookfrom = point3(0,1.5,15);
+        lookat = point3(0,1,0);
+
+        image_width = 400;
+        samples_per_pixel = 10;
+        max_depth = 3;
+
         vfov = 20;
-        aperture = 0.1;
+        aperture = 0;
         break;
 
     case 2:
@@ -278,11 +318,16 @@ int main(){
         vfov = 20;
         break;
 
+    
+
     case 3:
         world = triangles();
+        image_width = 7680;
+        samples_per_pixel = 1000;
         background = color(0, 0, 0);
         lookfrom = point3(0,10,10);
         lookat = point3(0,0,0);
+        vfov = 10;
         break;
 
 
@@ -295,16 +340,18 @@ int main(){
         vfov = 20;
         break;
 
+    
+
     case 5:
         world = cornell_box();
-        background = color(0.5, 0.5, 0.5);
+        background = color(0.4, 0.4, 0.4);
 
         aspect_ratio = 1.0;
-        image_width = 400;
-        samples_per_pixel = 10;
+        image_width = 1920;
+        samples_per_pixel = 500;
         lookfrom = point3(278, 278, -2000);
         lookat = point3(278, 278, 0);
-        vfov = 40;
+        vfov = 16;
         break;
         
     
@@ -319,31 +366,41 @@ int main(){
         vfov = 40;
         break;
 
+    
     default:
 
     case 7:
         world = poly_mesh();
         background = color(0.4,0.4,0.4);
-        lookfrom = point3(2,5,2);
+        lookfrom = point3(10,10,0);
         //lookfrom = point3(10, 5, 5);
-        lookat = point3(0,0,0);
-        image_width = 320;
-        samples_per_pixel = 20;
-        max_depth = 10;
-        vfov = 15;
+        lookat = point3(0,1,0);
+        image_width = 1920;
+        samples_per_pixel = 500;
+        max_depth = 50;
+
+        /*image_width = 400;
+        samples_per_pixel = 10;
+        max_depth = 5;*/
+
+        vfov = 20;
+        
 
         break;
     }
+    std::cerr << "Triangle Count: " << world.objects.size() << std::endl;
 
     //Camera
-    vec3 vup(0,0,1);
+    //vec3 vup(0,0,1);
+    vec3 vup(0, 1,0);
+
     // (lookfrom-lookat).length()
     auto dist_to_focus = 10.0;
+    dist_to_focus = (lookfrom - lookat).length();
     int image_height = static_cast<int>(image_width / aspect_ratio);
 
 
     camera cam(lookfrom, lookat ,vup , vfov, aspect_ratio, aperture, dist_to_focus, 0.0, 1.0);
-
     // Render
     std::cout << "P3\n" << image_width << " " << image_height << "\n255\n";
 
@@ -352,11 +409,12 @@ int main(){
     auto start = std::chrono::system_clock::now();
     auto end = std::chrono::system_clock::now();
 
-    std::cerr << "\rScanlines remaining: " << image_height - 1;
+    //std::cerr << "\rScanlines remaining: " << image_height - 1;
 
     for (int j = image_height-1; j >= 0; --j) {
         start = std::chrono::system_clock::now();
 
+        std::cerr << "\rScanlines remaining: " << j;
         for (int i = 0; i < image_width; ++i) {
             color pixel_color(0, 0, 0);
             for (int s = 0; s < samples_per_pixel; ++s) {
@@ -371,7 +429,7 @@ int main(){
         end = std::chrono::system_clock::now();
         std::chrono::duration<double> elapsed_seconds = end - start;
 
-        std::cerr << "\rScanlines remaining: " << j << " Time remaining: " << (elapsed_seconds.count()*j)/60 << 'm ';
+        std::cerr << "\rScanlines remaining: " << j << " Time remaining: " << (elapsed_seconds.count()*j)/60 << ' m ';
     }
     //poly->finalize();
     std::time_t end_time = std::chrono::system_clock::to_time_t(end);

@@ -1,3 +1,4 @@
 C:\Users\chenz\OneDrive\Documents\Internship\RayTracing2\x64\Release\RayTracing2.exe
 C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\RayTracing2 - Copy\x64\Release\RayTracing2.exe
 C:\Users\chenz\OneDrive\Documents\GitHub\RayTracing\x64\Release\RayTracing2.exe
+C:\Users\Bryan\Documents\Programming\github\RayTracing\x64\Release\RayTracing2.exe
