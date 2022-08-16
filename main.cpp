@@ -188,7 +188,7 @@ Polyhedron* poly;
 hittable_list poly_mesh(){
     hittable_list triangles;
 
-    auto light = make_shared<diffuse_light>(color(7, 7, 7));
+    auto light = make_shared<diffuse_light>(color(14, 14, 14));
     auto glass_material = make_shared<dielectric>(1.33);
     auto matte_material = make_shared<lambertian>(color(0.3, 0.3, 0.3));
     auto lightblue = make_shared<lambertian>(color(0.643, 0.7137, 0.937));
@@ -215,7 +215,7 @@ hittable_list poly_mesh(){
 
     FILE* this_file;
     //fopen_s(&this_file,"C:\\Users\\chenz\\OneDrive\\Documents\\Internship\\RayTracing2\\model3d\\cubewithdivot.ply", "r");
-    fopen_s(&this_file, "model3d\\cubewithhole.ply", "r");
+    fopen_s(&this_file, "model3d\\cubewithspheredivotdeep.ply", "r");
 
     if (this_file == NULL) { return triangles; }
     poly = new Polyhedron(this_file);
@@ -238,7 +238,7 @@ hittable_list poly_mesh(){
     //triangles.add(make_shared<xy_rect>(2, 6, 2, 6, 5, light));
 
     triangles.add(make_shared<sphere>(point3(0, -1000, 0), 1000, make_shared<lambertian>(color(0.3, 0.3, 0.3))));
-    triangles.add(make_shared<xz_rect>(1, 3, 1, 3, 5, light));
+    triangles.add(make_shared<xz_rect>(3, 4, 3, 4, 5, light));
 
     return triangles;
 }
@@ -372,16 +372,16 @@ int main(){
     case 7:
         world = poly_mesh();
         background = color(0.4,0.4,0.4);
-        lookfrom = point3(10,10,0);
+        lookfrom = point3(10,5,0);
         //lookfrom = point3(10, 5, 5);
         lookat = point3(0,1,0);
-        image_width = 1920;
+        image_width = 960;
         samples_per_pixel = 500;
         max_depth = 50;
 
-        /*image_width = 400;
-        samples_per_pixel = 10;
-        max_depth = 5;*/
+        //image_width = 400;
+        //samples_per_pixel = 10;
+        //max_depth = 5;
 
         vfov = 20;
         
